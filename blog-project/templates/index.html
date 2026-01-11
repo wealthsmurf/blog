@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Dark Blog</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button>
+
+    <div class="container">
+        <header>
+            <h1>🚀 Modern Dev Blog</h1>
+            <p>생각과 코드를 기록하는 공간</p>
+        </header>
+
+        <section class="editor-card">
+            <form action="/save" method="post" enctype="multipart/form-data">
+                <input type="text" name="title" placeholder="제목을 입력하세요" required>
+                
+                <div class="input-group">
+                    <label>📷 사진 첨부</label>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+
+                <select name="category" id="category-select" onchange="toggleCodeField()">
+                    <option value="일반">일반 기록 (Life)</option>
+                    <option value="개발">개발 로그 (Dev)</option>
+                </select>
+
+                <textarea name="content" placeholder="내용을 입력하세요..."></textarea>
+
+                <div id="code-field" style="display: none;">
+                    <label style="display:block; margin-bottom:8px; font-weight:bold; color:var(--secondary-color);">💻 소스 코드</label>
+                    <textarea name="code_content" placeholder="여기에 코드를 복사해서 붙여넣으세요"></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">게시물 저장하기</button>
+            </form>
+        </section>
+
+        <hr style="border:0; height:1px; background:var(--border-color); margin: 40px 0;">
+
+        <section class="post-list">
+            {% for post in posts %}
+            <article class="post-card {{ 'dev' if post.category == '개발' else 'gen' }}">
+                <span class="category-tag">{{ post.category }}</span>
+                <h2>{{ post.title }}</h2>
+                
+                {% if post.image %}
+                <div class="post-image">
+                    <img src="{{ url_for('static', filename='uploads/' + post.image) }}" alt="첨부 이미지">
+                </div>
+                {% endif %}
+
+                <div class="content">
+                    {{ post.content | safe }}
+                </div>
+            </article>
+            {% endfor %}
+        </section>
+    </div>
+
+    <script>
+        // 1. 다크 모드 토글
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('theme-btn');
+            body.classList.toggle('dark-mode');
+            
+            if(body.classList.contains('dark-mode')) {
+                btn.innerText = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                btn.innerText = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // 2. 페이지 로드 시 테마 복구
+        window.onload = () => {
+            if(localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-btn').innerText = '☀️';
+            }
+        }
+
+        // 3. 카테고리 선택 시 코드창 토글
+        function toggleCodeField() {
+            const select = document.getElementById('category-select');
+            const codeField = document.getElementById('code-field');
+            codeField.style.display = (select.value === '개발') ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html>
