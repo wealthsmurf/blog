@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # Railway의 PostgreSQL 연결 정보는 'DATABASE_URL' 환경 변수에 저장됩니다.
 # 로컬 테스트 시에는 직접 주소를 입력하거나 .env 파일을 사용할 수 있습니다.
-DATABASE_URL = os.environ.get('postgres-production-f428.up.railway.app')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 def get_db_connection():
     # sslmode='require'는 Railway/Supabase 등 클라우드 DB 연결 시 필수 보안 설정입니다.
